@@ -60,3 +60,20 @@ func TestValidationTagParameter(t *testing.T) {
 		fmt.Println(err.Error())
 	}
 }
+
+// validation struct
+func TestStruct(t *testing.T) {
+	type LoginStruct struct {
+		Username string `validate:"required,email"`
+		Password string `validate:"required,min=5"`
+	}
+	validate := validator.New()
+	loginRequest := LoginStruct{
+		Username: "masuk@admin.com",
+		Password: "masuk",
+	}
+	err := validate.Struct(loginRequest)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
