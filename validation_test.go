@@ -49,3 +49,14 @@ func TestValidationMultipleTags(t *testing.T) {
 		fmt.Println(err.Error())
 	}
 }
+
+// Tag parameter
+func TestValidationTagParameter(t *testing.T) {
+	validate := validator.New()
+	num := "994444"
+
+	err := validate.Var(num, "required,numeric,min=5,max=10")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
