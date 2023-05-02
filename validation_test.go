@@ -13,12 +13,26 @@ func TestValidation(t *testing.T) {
 	}
 }
 
+// Validation variable
 func TestValidationVariable(t *testing.T) {
 	validate := validator.New()
 	user := "name"
 
 	err := validate.Var(user, "required")
 
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
+
+// Validation two variable
+func TestValidateTwoVariable(t *testing.T) {
+	validate := validator.New()
+
+	password := "secret"
+	confirmPassword := "secret"
+
+	err := validate.VarWithValue(password, confirmPassword, "eqfield")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
