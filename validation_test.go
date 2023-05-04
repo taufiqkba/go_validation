@@ -429,3 +429,21 @@ func TestCustomValidationParameter(t *testing.T) {
 		fmt.Println(err)
 	}
 }
+
+// validation using OR rules
+func TestOrRules(t *testing.T) {
+	type Login struct {
+		Username string `validate:"required,email|numeric"`
+		Password string `validate:"required"`
+	}
+	request := Login{
+		Username: "123123",
+		Password: "123123",
+	}
+	validate := validator.New()
+	err := validate.Struct(request)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+}
