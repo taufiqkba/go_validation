@@ -10,7 +10,7 @@ import (
 )
 
 func TestValidation(t *testing.T) {
-	var validate *validator.Validate = validator.New()
+	validate := validator.New()
 	if validate == nil {
 		t.Error("Validate is nil")
 	}
@@ -394,7 +394,7 @@ func TestCustomValidation(t *testing.T) {
 	}
 }
 
-var regexNumber = regexp.MustCompile("^[0-9]+$")
+var regexNumber = regexp.MustCompile("^\\d+$")
 
 func MustValidPin(field validator.FieldLevel) bool {
 	length, err := strconv.Atoi(field.Param())
@@ -433,7 +433,7 @@ func TestCustomValidationParameter(t *testing.T) {
 // validation using OR rules
 func TestOrRules(t *testing.T) {
 	type Login struct {
-		Username string `validate:"required,email|numeric"`
+		Username string `validate:"required,email|numeric"` // using | alias OR
 		Password string `validate:"required"`
 	}
 	request := Login{
@@ -446,4 +446,40 @@ func TestOrRules(t *testing.T) {
 		fmt.Println(err.Error())
 	}
 
+}
+
+// validate custom validation cross fields
+func MustEqualsIgnoreCase(field validator.FieldLevel) bool {
+	value, _, _, ok := field.GetStructFieldOK2()
+	if !ok {
+		panic("filed not ok")
+	}
+	firstValue := strings.ToUpper(field.Field().String())
+	secondValue := strings.ToUpper(value.String())
+
+	return firstValue == secondValue
+}
+
+func TestCustomCrossFieldValidation(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterValidation("field_equals_ignore_case", MustEqualsIgnoreCase)
+
+	type User struct {
+		Username string `validate:"required,field_equals_ignore_case=Email|field_equals_ignore_case=Phone"`
+		Email    string `validate:"required,email"`
+		Phone    string `validate:"required,numeric"`
+		Name     string `validate:"required"`
+	}
+
+	user := User{
+		Username: "test@gmail.com",
+		Email:    "test@gmail.com",
+		Phone:    "081290192",
+		Name:     "testadmin",
+	}
+
+	err := validate.Struct(user)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
